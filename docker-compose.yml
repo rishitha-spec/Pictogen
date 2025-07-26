@@ -1,0 +1,50 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  backend-image:
+    build:
+      context: ./backend1
+      dockerfile: Dockerfile.image
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./backend1:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  frontend:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+      - backend-image
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - VITE_BACKEND_URL=http://localhost:8000
+      - VITE_IMAGE_API_URL=http://localhost:8001
+    restart: unless-stopped
