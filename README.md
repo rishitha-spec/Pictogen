@@ -1,4 +1,4 @@
-# PictoGen - Pictogram Generator from Text and Speech
+# 🖼️PictoGen - Pictogram Generator from Text and Speech
 
 PictoGen is a modern web application that converts natural language (text or speech) into simplified pictograms, making communication more accessible for people with cognitive or language disabilities.
 
